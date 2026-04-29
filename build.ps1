@@ -1,3 +1,16 @@
+# Bundle the Python MCP middleman into a variant's output folder. The in-game
+# C# client is already compiled into the DLL; this is the host-side server.
+function Add-McpServer($VariantPath) {
+    $McpDest = "$VariantPath/mcp-server"
+    Remove-Item -Recurse -Force $McpDest -ErrorAction SilentlyContinue
+    New-Item -ItemType Directory -Path $McpDest -Force | Out-Null
+    Copy-Item -Recurse -Path mcp-server/src -Destination $McpDest
+    Get-ChildItem -Path $McpDest -Recurse -Force -Directory -Filter "__pycache__" | Remove-Item -Recurse -Force
+    Copy-Item -Path mcp-server/pyproject.toml -Destination $McpDest
+    Copy-Item -Path mcp-server/uv.lock -Destination $McpDest
+    Copy-Item -Path mcp-server/README.md -Destination $McpDest
+}
+
 # ----------- MelonLoader IL2CPP CoreCLR (Il2CppInterop, ML 0.6+ / 0.7+) -----------
 dotnet build src/UnityExplorer.sln -c Release_ML_Cpp_CoreCLR
 $Path = "Release\UnityExplorer.MelonLoader.IL2CPP.CoreCLR"
@@ -16,6 +29,7 @@ Move-Item -Path $Path/UnityExplorer.ML.IL2CPP.CoreCLR.dll -Destination $Path/Mod
 New-Item -Path "$Path" -Name "UserLibs" -ItemType "directory" -Force
 Move-Item -Path $Path/UniverseLib.IL2CPP.Interop.dll -Destination $Path/UserLibs -Force
 # (create zip archive)
+Add-McpServer $Path
 Remove-Item $Path/../UnityExplorer.MelonLoader.IL2CPP.CoreCLR.zip -ErrorAction SilentlyContinue
 7z a $Path/../UnityExplorer.MelonLoader.IL2CPP.CoreCLR.zip .\$Path\*
 
@@ -35,6 +49,7 @@ Move-Item -Path $Path/UnityExplorer.ML.IL2CPP.net6preview.dll -Destination $Path
 New-Item -Path "$Path" -Name "UserLibs" -ItemType "directory" -Force
 Move-Item -Path $Path/UniverseLib.IL2CPP.Unhollower.dll -Destination $Path/UserLibs -Force
 # (create zip archive)
+Add-McpServer $Path
 Remove-Item $Path/../UnityExplorer.MelonLoader.IL2CPP.net6preview.zip -ErrorAction SilentlyContinue
 7z a $Path/../UnityExplorer.MelonLoader.IL2CPP.net6preview.zip .\$Path\*
 
@@ -53,6 +68,7 @@ Move-Item -Path $Path/UnityExplorer.ML.IL2CPP.dll -Destination $Path/Mods -Force
 New-Item -Path "$Path" -Name "UserLibs" -ItemType "directory" -Force
 Move-Item -Path $Path/UniverseLib.IL2CPP.Unhollower.dll -Destination $Path/UserLibs -Force
 # (create zip archive)
+Add-McpServer $Path
 Remove-Item $Path/../UnityExplorer.MelonLoader.IL2CPP.zip -ErrorAction SilentlyContinue
 7z a $Path/../UnityExplorer.MelonLoader.IL2CPP.zip .\$Path\*
 
@@ -69,6 +85,7 @@ Move-Item -Path $Path/UnityExplorer.ML.Mono.dll -Destination $Path/Mods -Force
 New-Item -Path "$Path" -Name "UserLibs" -ItemType "directory" -Force
 Move-Item -Path $Path/UniverseLib.Mono.dll -Destination $Path/UserLibs -Force
 # (create zip archive)
+Add-McpServer $Path
 Remove-Item $Path/../UnityExplorer.MelonLoader.Mono.zip -ErrorAction SilentlyContinue
 7z a $Path/../UnityExplorer.MelonLoader.Mono.zip .\$Path\*
 
@@ -87,6 +104,7 @@ New-Item -Path "$Path" -Name "plugins/sinai-dev-UnityExplorer" -ItemType "direct
 Move-Item -Path $Path/UnityExplorer.BIE.IL2CPP.dll -Destination $Path/plugins/sinai-dev-UnityExplorer -Force
 Move-Item -Path $Path/UniverseLib.IL2CPP.Unhollower.dll -Destination $Path/plugins/sinai-dev-UnityExplorer -Force
 # (create zip archive)
+Add-McpServer $Path
 Remove-Item $Path/../UnityExplorer.BepInEx.IL2CPP.zip -ErrorAction SilentlyContinue
 7z a $Path/../UnityExplorer.BepInEx.IL2CPP.zip .\$Path\*
 
@@ -108,6 +126,7 @@ New-Item -Path "$Path" -Name "plugins/sinai-dev-UnityExplorer" -ItemType "direct
 Move-Item -Path $Path/UnityExplorer.BIE.IL2CPP.CoreCLR.dll -Destination $Path/plugins/sinai-dev-UnityExplorer -Force
 Move-Item -Path $Path/UniverseLib.IL2CPP.Interop.dll -Destination $Path/plugins/sinai-dev-UnityExplorer -Force
 # (create zip archive)
+Add-McpServer $Path
 Remove-Item $Path/../UnityExplorer.BepInEx.IL2CPP.CoreCLR.zip -ErrorAction SilentlyContinue
 7z a $Path/../UnityExplorer.BepInEx.IL2CPP.CoreCLR.zip .\$Path\*
 
@@ -124,6 +143,7 @@ New-Item -Path "$Path" -Name "plugins/sinai-dev-UnityExplorer" -ItemType "direct
 Move-Item -Path $Path/UnityExplorer.BIE5.Mono.dll -Destination $Path/plugins/sinai-dev-UnityExplorer -Force
 Move-Item -Path $Path/UniverseLib.Mono.dll -Destination $Path/plugins/sinai-dev-UnityExplorer -Force
 # (create zip archive)
+Add-McpServer $Path
 Remove-Item $Path/../UnityExplorer.BepInEx5.Mono.zip -ErrorAction SilentlyContinue
 7z a $Path/../UnityExplorer.BepInEx5.Mono.zip .\$Path\*
 
@@ -140,6 +160,7 @@ New-Item -Path "$Path" -Name "plugins/sinai-dev-UnityExplorer" -ItemType "direct
 Move-Item -Path $Path/UnityExplorer.BIE6.Mono.dll -Destination $Path/plugins/sinai-dev-UnityExplorer -Force
 Move-Item -Path $Path/UniverseLib.Mono.dll -Destination $Path/plugins/sinai-dev-UnityExplorer -Force
 # (create zip archive)
+Add-McpServer $Path
 Remove-Item $Path/../UnityExplorer.BepInEx6.Mono.zip -ErrorAction SilentlyContinue
 7z a $Path/../UnityExplorer.BepInEx6.Mono.zip .\$Path\*
 
@@ -151,6 +172,7 @@ lib/ILRepack.exe /target:library /lib:lib/net35 /lib:$Path /internalize /out:$Pa
 # (cleanup and move files)
 Remove-Item $Path/Tomlet.dll
 Remove-Item $Path/mcs.dll
+Add-McpServer $Path
 Remove-Item $Path/../UnityExplorer.Standalone.Mono.zip -ErrorAction SilentlyContinue
 7z a $Path/../UnityExplorer.Standalone.Mono.zip .\$Path\*
 
@@ -164,6 +186,7 @@ Remove-Item $Path/Tomlet.dll
 Remove-Item $Path/mcs.dll
 Remove-Item $Path/Iced.dll
 Remove-Item $Path/UnhollowerBaseLib.dll
+Add-McpServer $Path
 Remove-Item $Path/../UnityExplorer.Standalone.IL2CPP.zip -ErrorAction SilentlyContinue
 7z a $Path/../UnityExplorer.Standalone.IL2CPP.zip .\$Path\*
 
@@ -174,3 +197,4 @@ Copy-Item $Path1/UnityExplorer.STANDALONE.Mono.dll -Destination $Path2
 Copy-Item $Path1/UniverseLib.Mono.dll -Destination $Path2
 Remove-Item Release/UnityExplorer.Editor.zip -ErrorAction SilentlyContinue
 7z a Release/UnityExplorer.Editor.zip .\UnityEditorPackage\*
+
